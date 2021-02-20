@@ -203,6 +203,7 @@ int main(int argc, char* argv[])
 
         boost::asio::io_context io_context;
         Server s(io_context, std::atoi(argv[1]));
+        std::cout << "Server is on\n";
         io_context.run();
         //s.~Server(); //actually doesn't need here 
     }
