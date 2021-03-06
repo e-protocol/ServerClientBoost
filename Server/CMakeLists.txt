@@ -12,6 +12,6 @@ ENDIF(Boost_FOUND)
 
 set(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBRARY})
 
-add_executable(server server.cpp safeMap.h json.hpp)
+add_executable(server server.cpp safeMap.h jsonObj.h json.hpp)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 target_link_libraries(server ${USED_LIBS})

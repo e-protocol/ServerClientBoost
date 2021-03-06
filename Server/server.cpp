@@ -4,11 +4,9 @@
 #include <utility>
 #include <boost/asio.hpp>
 #include "safeMap.h"
-#include "json.hpp"
+#include "jsonObj.h"
 
 using boost::asio::ip::tcp;
-enum { max_length = 1024 };
-
     //depending on app interface this function can be used
     /*void quitFunc()
     {
@@ -42,8 +40,6 @@ private:
     SafeMap<std::string,std::string> *m_safeMap;
     tcp::socket socket_;
     char data_[max_length];
-    std::string response;
-    std::string request;
     
     void do_read()
     {
@@ -75,82 +71,11 @@ private:
     
     void responseFunc()
     {
-        nlohmann::json json;
-        std::string in;
+        JsonObj jsonObj(data_,m_safeMap);
         
-        for(size_t k = 0; k < max_length; ++k)
-        {
-            if(data_[k] != '\n')
-                in.push_back(data_[k]);
-            else
-                break;
-        }
-        
-        json = nlohmann::json::parse(in);
-        request = json.dump();
-        
-        //check json validness
-        int status = 0;
-        if(json["Request"] == "read" && !json["key"].empty())
-            status = 1;
-        else if(json["Request"] == "write" && !json["key"].empty() 
-            && !json["value"].empty())
-            status = 2;
-        else
-            status = 70;
-            
-        switch(status)
-        {
-            //read
-            case(1):
-            {
-                auto it = m_safeMap->find(json["key"]);
-                std::string value = "";
-                json.clear();
-                    
-                if(it != m_safeMap->end())
-                {    
-                    value = it->second;
-                    json["Status"] = "ok";
-                    json["key"] = value;
-                }
-                else
-                {
-                    json["Status"] = "error";
-                    json["description"] = "Not Found!";
-                }
-                break;               
-            }
-            //write
-            case(2):
-            {
-                auto it = m_safeMap->find(json["key"]);
-                if(it != m_safeMap->end())
-                {
-                    json.clear();
-                    json["Status"] = "error";
-                    json["description"] = "Key already exists!";
-                }
-                else
-                {
-                    m_safeMap->insert(json["key"],json["value"]);
-                    json.clear();
-                    json["Status"] = "ok";
-                }
-                break;
-            }
-            //invalid input
-            default:
-            {
-                json.clear();
-                json["Status"] = "error";
-                json["description"] = "Invalid command!";
-            }
-        }
-        
-        response = json.dump() + "\n";
-        std::cout << request << "\n";
-        std::cout << response << "\n";
+        std::string response = jsonObj.getResponse() + "\n";
+        std::cout << jsonObj.getRequest() << "\n";
+        std::cout << response;
             
         for(size_t k = 0; k < max_length; ++k)
             k < response.size() ? data_[k] = response[k] :

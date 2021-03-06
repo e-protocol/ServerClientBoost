@@ -37,43 +37,14 @@ public:
         mtx.unlock();
     }
 
-    typename std::map<_Key,_Value>::iterator find(const _Key &key)
+    typename std::pair<_Key,_Value> find(const _Key &key)
     {
         mtx.lock();
         auto it = map.find(key);
         mtx.unlock();
-        return it;
-    }
-
-    _Value getValue(const _Key &key)
-    {
-        mtx.lock();
-        auto it = map.find(key);
-        _Value value;
-        
-        if(it != map.end())
-            value = it->second;
-        
-        mtx.unlock();
-        return value;
-    }
-
-    typename std::map<_Key,_Value>::iterator begin()
-    {
-        mtx.lock();
-        typename std::map<_Key,_Value>::iterator it;
-        it = map.begin();
-        mtx.unlock();
-        return it;
-    }
-
-    typename std::map<_Key,_Value>::iterator end()
-    {
-        mtx.lock();
-        typename std::map<_Key,_Value>::iterator it;
-        it = map.end();
-        mtx.unlock();
-        return it;
+        if(it!=map.end())
+            return std::pair<_Key,_Value>(it->first,it->second);
+        return std::pair<_Key,_Value>();
     }
 };
 

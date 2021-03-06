@@ -3,5 +3,6 @@
 
 CMakeFiles/server.dir/server.cpp.o
  /root/test/ServerClientBoost/Server/json.hpp
+ /root/test/ServerClientBoost/Server/jsonObj.h
  /root/test/ServerClientBoost/Server/safeMap.h
  /root/test/ServerClientBoost/Server/server.cpp
